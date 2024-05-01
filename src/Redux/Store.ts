@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import issuesReducer from "./issuesReducer";
 import columnsReducer from "./columnsReducer";
+import terminalReducer from "./terminalReducer";
 
 const store = configureStore({
   reducer: {
     issues: issuesReducer,
     columns: columnsReducer,
+    terminal: terminalReducer,
   },
 });
 

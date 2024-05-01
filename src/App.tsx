@@ -12,7 +12,7 @@ function App() {
       <main>
         <TaskColumn />
       </main>
-      <footer>
+      <footer style={{ display: 'flex', flexDirection: 'column' }}>
         <Terminal />
       </footer>
     </div>

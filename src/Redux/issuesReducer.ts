@@ -24,12 +24,8 @@ const initialState: IssuesState = {
 export const fetchIssues = createAsyncThunk(
   "get/issues",
   async (params: { owner: string, repo: string }) => {
-    try {
-      const response = await getRepoIssues(params.owner, params.repo);
-      return response;
-    } catch (error: any) {
-      throw error;
-    }
+    const response = await getRepoIssues(params.owner, params.repo);
+    return response;
   }
 );
 
@@ -46,6 +42,9 @@ export const issuesSlice = createSlice({
     cleanIssues: (state) => {
       state.issues = [];
       state.sessionIssue = null;
+    },
+    setIssueError: (state, action) => {
+      state.error = action.payload;
     }
   },
   extraReducers(builder) {
@@ -57,15 +56,16 @@ export const issuesSlice = createSlice({
         state.issues = action.payload;
         state.loading = false;
       })
-      .addCase(fetchIssues.rejected, (state, _action) => {
-        state.error = "Sorry, try again later.";
+      .addCase(fetchIssues.rejected, (state, action) => {
+        state.error = action.error.message || 'An unknown error occurred';
         state.loading = false;
       })
   },
 });
 
-export const { setSessionIssues, cleanIssues, setActiveRepo } = issuesSlice.actions;
+export const { setSessionIssues, cleanIssues, setActiveRepo, setIssueError } = issuesSlice.actions;
 
+export const selectFetchError = (state: RootState) => state.issues.error;
 export const selectActiveRepo = (state: RootState) => state.issues.activeRepo;
 export const selectSessionIssue = (state: RootState) => state.issues.sessionIssue;
 export const selectIssues = (state: RootState) => state.issues.issues;

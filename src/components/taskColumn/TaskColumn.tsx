@@ -13,6 +13,7 @@ import {
   selectInProgressColunm,
   setSession,
 } from 'src/Redux/columnsReducer'
+import { setTerminalData } from 'src/Redux/terminalReducer'
 
 const boxes = ['ToDo', 'In Progress', 'Done']
 
@@ -77,7 +78,9 @@ export const TaskColumn = () => {
       Done: 'doneColumn',
     }
 
-    const issue = issues.find((e) => e.id.toString() === draggableId)
+    const allIssues = [...todoColumn, ...progressColumn, ...doneColumn]
+    const issue = allIssues.find((e) => e.id.toString() === draggableId)
+
     if (!issue) {
       return
     }
@@ -89,6 +92,9 @@ export const TaskColumn = () => {
     dispatch(
       reorder({ issue, column: destinationColumn, index: destination.index })
     )
+
+    const terminalData = `${sessionIssues}: "${issue.issueNumber}" from "${sourceColumn}" moved to "${destinationColumn}"`
+    dispatch(setTerminalData(terminalData))
   }
 
   return (
@@ -104,13 +110,13 @@ export const TaskColumn = () => {
         {boxes.map((element) => (
           <Box
             key={element}
-            marginTop="20px"
+            marginTop="10px"
             display="flex"
             flexDirection="column"
             alignItems="center"
             gap="20px"
           >
-            <Text fontSize="25px" fontWeight="700">
+            <Text fontSize="25px" fontWeight="700" color='white'>
               {element}
             </Text>
             <Droppable droppableId={element}>
@@ -124,7 +130,7 @@ export const TaskColumn = () => {
                   borderColor="gray.200"
                   padding="10px"
                   gap="5px"
-                  height="60vh"
+                  height="500px"
                   overflowY="auto"
                   width="450px"
                   overflowX="hidden"

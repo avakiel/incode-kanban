@@ -12,6 +12,10 @@ export const getRepoIssues = async (owner: string, repo: string) => {
     )
     const data = await response.json()
 
+    if (!Array.isArray(data)) {
+      throw new Error('Unexpected response from API');
+    }
+
     const simplifiedData = data.map(
       (issue: IssueDTO) => ({
         id: issue.id,
@@ -28,7 +32,7 @@ export const getRepoIssues = async (owner: string, repo: string) => {
     return simplifiedData
   } catch (error) {
     console.error('Error fetching data:', error)
-    return error
+    throw new Error(`Error, check your URL->"https://github.com/${owner}/${repo}"`)
   }
 }
 
@@ -43,6 +47,5 @@ export const fetchRepoStars = async (owner: string, repo: string) => {
   )
   const data = await response.json()
 
-  console.log('data:', data.stargazers_count)
   return data.stargazers_count;
 }
