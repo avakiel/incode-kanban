@@ -1,22 +1,13 @@
-html, body {
-    height: 100%;
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 .App {
-    min-height: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     background-color: #161b22;
     color: #576270;
-}
-
-header, main {
-    flex: none; /* Prevents them from growing and shrinking */
-}
-
-footer {
-    flex-grow: 1; /* Takes up remaining space */
-    overflow: auto; /* Adds scrollbar if content overflows */
 }

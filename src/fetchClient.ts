@@ -1,15 +1,16 @@
 import { IssueDTO } from "./DTO/issue.dto"
 
-export const getRepoIssues = async (owner: string, repo: string) => {
+export const getRepoIssues = async (owner: string, repo: string, per_page = '50', page = '1') => {
   try {
     const response = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/issues`,
+      `https://api.github.com/repos/${owner}/${repo}/issues?per_page=${per_page}&page=${page}`,
       {
         headers: {
           Authorization: `token ${process.env.REACT_APP_GITHUB_TOKEN}`,
         },
       }
     )
+    console.log(response.headers.get('Link'))
     const data = await response.json()
 
     if (!Array.isArray(data)) {
@@ -21,7 +22,7 @@ export const getRepoIssues = async (owner: string, repo: string) => {
         id: issue.id,
         title: issue.title,
         userLink: issue.user.html_url,
-        commentsURL: issue.comments_url,
+        commentsURL: issue.html_url,
         commentsCount: issue.comments,
         createdAt: issue.created_at,
         issueNumber: issue.number,

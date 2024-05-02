@@ -60,6 +60,7 @@ export const issuesSlice = createSlice({
         state.error = action.error.message || 'An unknown error occurred';
         state.loading = false;
       })
+      
   },
 });
 

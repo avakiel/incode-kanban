@@ -29,9 +29,11 @@ export const Terminal = () => {
 
   return (
     <Box
+      padding='5px'
+      height='135px'
+      width='100%'
       display="flex"
       marginTop="30px"
-      height="200px"
       bgColor="black"
       overflow="auto"
       flexDirection="column"
@@ -39,10 +41,10 @@ export const Terminal = () => {
     >
       {actions.map((action, index) => (
         <Box key={index} color="white">
-          <Text color='#576270'>{action}</Text>
+          <Text color='#848d97'>{action}</Text>
         </Box>
       ))}
-      <Text color="green.500">{`waiting for actions${'.'.repeat(Number(dotCount))}`}</Text>
+      <Text color="#848d97">{`waiting for actions${'.'.repeat(Number(dotCount))}`}</Text>
       <div ref={bottomRef} />
     </Box>
   )

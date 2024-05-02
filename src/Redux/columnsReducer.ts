@@ -1,19 +1,29 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "./Store";
 import { IssuesType } from "src/Types/Types";
+import { getRepoIssues } from "src/fetchClient";
 
-interface columnsState {
+interface Columns {
   todoColumn: IssuesType[],
   doneColumn: IssuesType[],
   inProgressColumn: IssuesType[],
-  [key: string]: IssuesType[],
+  [key: string]: IssuesType[] | string,
 }
 
-const initialState: columnsState = {
+const initialState: Columns = {
   todoColumn: [],
   doneColumn: [],
   inProgressColumn: [],
+  loading: 'false',
 };
+
+export const fetchExtraIssues = createAsyncThunk(
+  "get/extraIssues",
+  async (params: { owner: string, repo: string, per_page: string, page: string }) => {
+    const response = await getRepoIssues(params.owner, params.repo, params.per_page, params.page);
+    return response;
+  }
+);
 
 export const columnsSlice = createSlice({
   name: "columns",
@@ -28,10 +38,14 @@ export const columnsSlice = createSlice({
       state.todoColumn = action.payload.todo;
     },
     dragAndDropIssue: (state, action: PayloadAction<{ issue: IssuesType, column: string }>) => {
-      state[action.payload.column] = state[action.payload.column].filter((e) => e.id !== action.payload.issue.id);
+      if (Array.isArray(state[action.payload.column])) {
+        state[action.payload.column] = (state[action.payload.column] as IssuesType[]).filter((e) => e.id !== action.payload.issue.id);
+      }
     },
     reorder: (state, action: PayloadAction<{ issue: IssuesType, column: string, index: number }>) => {
-      state[action.payload.column].splice(action.payload.index, 0, action.payload.issue);
+      if (Array.isArray(state[action.payload.column])) {
+        (state[action.payload.column] as IssuesType[]).splice(action.payload.index, 0, action.payload.issue);
+      }
     },
     cleanColumn: (state) => {
       state.doneColumn = [];
@@ -39,13 +53,27 @@ export const columnsSlice = createSlice({
       state.todoColumn = [];
     }, 
   },
+  extraReducers(builder) {
+    builder
+    .addCase(fetchExtraIssues.pending, (state) => {
+      state.loading = 'true';
+    })
+    .addCase(fetchExtraIssues.fulfilled, (state, action) => {
+      state.todoColumn = [...state.todoColumn, ...action.payload];
+      state.loading = 'false';
+    })
+    .addCase(fetchExtraIssues.rejected, (state) => {
+      state.loading = 'false';
+    });
+  },
 });
 
 export const { setTodo, dragAndDropIssue, reorder, setSession, cleanColumn } = columnsSlice.actions;
 
-export const selectTodoColunm = (state: RootState) => state.columns.todoColumn;
+export const selectTodoColunm: (state: RootState) => IssuesType[] = (state: RootState) => state.columns.todoColumn;
 export const selectDoneColunm = (state: RootState) => state.columns.doneColumn;
 export const selectInProgressColunm = (state: RootState) => state.columns.inProgressColumn;
+export const selectLoading = (state: RootState) => state.columns.loading;
 
 
 export default columnsSlice.reducer;

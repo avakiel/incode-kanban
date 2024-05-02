@@ -59,7 +59,7 @@ export const Header = () => {
       dispatch(setActiveRepo({ owner: owner, repo: repo }))
       setError(false)
     } else {
-      setQuery('invalid URL. Please try this-->: https://github.com/facebook/react')
+      setQuery('invalid URL. Please try this-->: "https://github.com/facebook/react"')
       setError(true)
     }
   }
@@ -77,10 +77,11 @@ export const Header = () => {
         <Box
           display="flex"
           flexDirection="column"
-          gap="30px"
+          gap="10px"
           alignItems="center"
           width="40%"
           margin="0 auto"
+          height='30%'
         >
           <Text fontSize="50px" fontWeight="700" color="white">
             Incode
