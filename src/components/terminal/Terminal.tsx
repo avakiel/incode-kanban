@@ -1,11 +1,10 @@
 import { Box, Text } from '@chakra-ui/react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAppSelector } from 'src/Redux/hooks'
 import { selectTerminalData } from 'src/Redux/terminalReducer'
 
 export const Terminal = () => {
   const terminal = useAppSelector(selectTerminalData)
-  const bottomRef = useRef<HTMLDivElement>(null)
   const [dotCount, setDotCount] = useState(0)
   const [actions, setActions] = useState<string[]>([])
 
@@ -14,10 +13,6 @@ export const Terminal = () => {
       setActions((prevActions) => [...prevActions, terminal])
     }
   }, [terminal])
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [actions])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -45,7 +40,6 @@ export const Terminal = () => {
         </Box>
       ))}
       <Text color="#848d97">{`waiting for actions${'.'.repeat(Number(dotCount))}`}</Text>
-      <div ref={bottomRef} />
     </Box>
   )
 }

@@ -1,1 +1,1 @@
-export const gitHubHost = 'https://github.com/'
+export const GITHUB_HOST = 'https://github.com/'

@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "./Store";
-import { getRepoIssues } from "src/fetchClient";
-import { IssuesType } from "src/Types/Types";
-
 
 interface IssuesState {
   loading: boolean;

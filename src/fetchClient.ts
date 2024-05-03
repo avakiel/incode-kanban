@@ -1,4 +1,5 @@
 import { IssueDTO } from "./DTO/issue.dto"
+import { FETCH_ERR } from "./helpers/errors";
 
 export const getRepoIssues = async (owner: string, repo: string, per_page = '50', page = '1') => {
   try {
@@ -10,11 +11,11 @@ export const getRepoIssues = async (owner: string, repo: string, per_page = '50'
         },
       }
     )
-    console.log(response.headers.get('Link'))
+
     const data = await response.json()
 
     if (!Array.isArray(data)) {
-      throw new Error('Unexpected response from API');
+      throw new Error(FETCH_ERR);
     }
 
     const simplifiedData = data.map(

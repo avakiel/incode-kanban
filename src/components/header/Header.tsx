@@ -8,7 +8,7 @@ import { useFetchError } from 'src/helpers/useFetchError'
 import { parseGithubUrl } from 'src/helpers/helpers'
 import { SearchInput } from './input/InputSearch'
 import { INVALID_URL } from 'src/helpers/errors'
-import { gitHubHost } from 'src/helpers/constants'
+import { GITHUB_HOST } from 'src/helpers/constants'
 
 export const Header = () => {
   const [githubUrl, setGithubUrl] = useState('')
@@ -25,8 +25,10 @@ export const Header = () => {
     const sessionKey = `${owner}/${repo}`
     const sessionRepo = sessionStorage.getItem(sessionKey)
 
-    if (githubUrl.startsWith(gitHubHost) && !sessionRepo) {
+    if (githubUrl.startsWith(GITHUB_HOST) && !sessionRepo) {
       dispatch(cleanColumn())
+      dispatch(setSessionIssues(null))
+      
       dispatch(setActiveRepo({ owner, repo }))
     } else if (sessionRepo) {
       dispatch(setSessionIssues(sessionKey))
@@ -61,7 +63,7 @@ export const Header = () => {
           </Stack>
 
           <Box alignSelf="flex-start" width="300px" height="20px">
-            {!error && <RepoLink />}
+            {!error && <RepoLink setError={setGithubUrl} />}
           </Box>
         </Box>
       </header>

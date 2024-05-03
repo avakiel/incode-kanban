@@ -1,5 +1,8 @@
+import { GITHUB_HOST } from "./constants"
+
+
 export const parseGithubUrl = (url: string) => {
-  const path = url.slice('https://github.com/'.length)
+  const path = url.slice(GITHUB_HOST.length)
   const parts = path.split('/')
   return { owner: parts[0], repo: parts[1] }
 }
