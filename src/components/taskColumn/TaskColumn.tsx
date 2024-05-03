@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Box, Button, Flex, Image, Text } from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { useAppDispatch, useAppSelector } from 'src/Redux/hooks'
 import { selectActiveRepo, selectSessionIssue } from 'src/Redux/issuesReducer'
@@ -27,12 +27,9 @@ export const TaskColumn = () => {
   const sessionIssues = useAppSelector(selectSessionIssue)
   const activeRepo = useAppSelector(selectActiveRepo)
   const loaderExtraIssues = useAppSelector(selectLoading)
-  const [page, setPage] = useState(1)
+  const [repoPage, setRepoPage] = useState(1)
 
-  const totalUploaded = todoColumn.length + doneColumn.length + progressColumn.length
-
-  function uploadMoreIssue() {
-    setPage((prev) => prev + 1)
+  const fetchIssues = (page: number) => {
     if (!activeRepo) return
 
     dispatch(
@@ -45,29 +42,30 @@ export const TaskColumn = () => {
     )
   }
 
-  useEffect(() => {
-    if (!activeRepo) return
-    dispatch(
-      fetchExtraIssues({
-        owner: activeRepo?.owner,
-        repo: activeRepo?.repo,
-        per_page: '50',
-        page: page.toString(),
-      })
-    )
-    setPage(2)
-  }, [activeRepo])
+  const uploadMoreIssue = () => {
+    setRepoPage((prev) => prev + 1)
+    fetchIssues(repoPage + 1)
+  }
 
-  useEffect(() => {
+  const handleActiveRepoChange = () => {
+    if (!activeRepo || sessionIssues) return
+
+    setRepoPage(1)
+    fetchIssues(1)
+  }
+
+  const handleSessionIssuesChange = () => {
     const storedData = sessionStorage.getItem(sessionIssues as string)
     if (storedData) {
       const { todo, done, inProgress } = JSON.parse(storedData)
+      const { page } = JSON.parse(storedData)
 
+      setRepoPage(page)
       dispatch(setSession({ todo, done, inProgress }))
     }
-  }, [sessionIssues])
+  }
 
-  useEffect(() => {
+  const handleColumnsChange = () => {
     const repoURL = todoColumn[0]?.repoURL || doneColumn[0]?.repoURL || progressColumn[0]?.repoURL || ''
 
     if (!repoURL) return
@@ -81,10 +79,15 @@ export const TaskColumn = () => {
       todo: todoColumn,
       done: doneColumn,
       inProgress: progressColumn,
+      page: repoPage,
     }
 
     sessionStorage.setItem(sessionKey, JSON.stringify(columnsState))
-  }, [todoColumn, doneColumn, progressColumn])
+  }
+
+  useEffect(handleActiveRepoChange, [activeRepo])
+  useEffect(handleSessionIssuesChange, [sessionIssues])
+  useEffect(handleColumnsChange, [todoColumn, doneColumn, progressColumn])
 
   const handleDragEnd = (result: any) => {
     const { destination, source, draggableId } = result
@@ -116,7 +119,13 @@ export const TaskColumn = () => {
     dispatch(dragAndDropIssue({ issue, column: sourceColumn }))
     dispatch(reorder({ issue, column: destinationColumn, index: destination.index }))
 
-    const terminalData = `[${activeRepo?.owner + `/` + activeRepo?.repo}]: "#${
+    const now = new Date()
+    const timestamp = `${now.getHours().toString().padStart(2, '0')}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
+
+    const terminalData = `${timestamp} [${activeRepo?.owner + `/` + activeRepo?.repo}]: "#${
       issue.issueNumber
     }" from "${sourceColumn}" moved to "${destinationColumn}"`
     dispatch(setTerminalData(terminalData))
@@ -162,13 +171,14 @@ export const TaskColumn = () => {
                         loaderExtraIssues === 'true' ? (
                           <Loader />
                         ) : (
-                          <Box 
-                          alignSelf="center"
-                          cursor='pointer'
-                          borderRadius="50%"
-                          _hover={{ bgColor: '#3f4d5b', color: 'white' }}
-                          onClick={uploadMoreIssue}
-                          style={{ fontSize: '20px' }}>
+                          <Box
+                            alignSelf="center"
+                            cursor="pointer"
+                            borderRadius="50%"
+                            _hover={{ bgColor: '#3f4d5b', color: 'white' }}
+                            onClick={uploadMoreIssue}
+                            style={{ fontSize: '20px' }}
+                          >
                             &darr;&darr;&darr;
                           </Box>
                         )

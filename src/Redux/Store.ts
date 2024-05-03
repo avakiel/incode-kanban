@@ -3,7 +3,7 @@ import issuesReducer from "./issuesReducer";
 import columnsReducer from "./columnsReducer";
 import terminalReducer from "./terminalReducer";
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
     issues: issuesReducer,
     columns: columnsReducer,
@@ -13,5 +13,3 @@ const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-export default store;

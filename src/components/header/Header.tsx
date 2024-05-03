@@ -1,75 +1,40 @@
-import React, { useEffect, useState } from 'react'
-import {
-  Box,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  InputRightAddon,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import React, { useState } from 'react'
+import { Box, Stack, Text } from '@chakra-ui/react'
 import { useAppDispatch, useAppSelector } from 'src/Redux/hooks'
-import {
-  cleanIssues,
-  fetchIssues,
-  selectFetchError,
-  setActiveRepo,
-  setIssueError,
-  setSessionIssues,
-} from 'src/Redux/issuesReducer'
+import { selectFetchError, setActiveRepo, setSessionIssues } from 'src/Redux/issuesReducer'
 import { cleanColumn } from 'src/Redux/columnsReducer'
-import { RepoLink } from '../repoLink/RepoLink'
+import { RepoLink } from './repoLink/RepoLink'
+import { useFetchError } from 'src/helpers/useFetchError'
+import { parseGithubUrl } from 'src/helpers/helpers'
+import { SearchInput } from './input/InputSearch'
+import { INVALID_URL } from 'src/helpers/errors'
+import { gitHubHost } from 'src/helpers/constants'
 
 export const Header = () => {
-  const [query, setQuery] = useState('')
-  const [error, setError] = useState(false)
+  const [githubUrl, setGithubUrl] = useState('')
   const fetchError = useAppSelector(selectFetchError)
+  const error = useFetchError(fetchError)
 
   const dispatch = useAppDispatch()
 
   // https://github.com/facebook/react
-  // https://github.com/kitloong/json-server-vercel
   // https://github.com/vuejs/vue
 
   const handleSearch = async () => {
-    setError(false)
-
-    const path = query.slice('https://github.com/'.length)
-    const parts = path.split('/')
-    const owner = parts[0]
-    const repo = parts[1]
+    const { owner, repo } = parseGithubUrl(githubUrl)
     const sessionKey = `${owner}/${repo}`
-
     const sessionRepo = sessionStorage.getItem(sessionKey)
 
-    if (query.startsWith('https://github.com/') && !sessionRepo) {
+    if (githubUrl.startsWith(gitHubHost) && !sessionRepo) {
       dispatch(cleanColumn())
-      dispatch(cleanIssues())
-
-      dispatch(fetchIssues({ owner: owner, repo: repo }))
-      .then(() => {
-        if (!fetchError) {
-          dispatch(setActiveRepo({ owner: owner, repo: repo }))
-        }
-      })
-      .then(() => dispatch(setIssueError('')))
-      .catch(() => setError(true))
+      dispatch(setActiveRepo({ owner, repo }))
     } else if (sessionRepo) {
       dispatch(setSessionIssues(sessionKey))
-      dispatch(setActiveRepo({ owner: owner, repo: repo }))
-      setError(false)
+      dispatch(setActiveRepo({ owner, repo }))
     } else {
-      setQuery('invalid URL. Please try this-->: "https://github.com/facebook/react"')
-      setError(true)
+      setGithubUrl(INVALID_URL)
     }
   }
-
-  useEffect(() => {
-    if (fetchError) {
-      setError(true)
-      setQuery(fetchError)
-    }
-  }, [fetchError])
 
   return (
     <div>
@@ -81,53 +46,23 @@ export const Header = () => {
           alignItems="center"
           width="40%"
           margin="0 auto"
-          height='30%'
+          height="30%"
         >
           <Text fontSize="50px" fontWeight="700" color="white">
             Incode
           </Text>
+
           <Stack spacing={4} width="100%" alignSelf="flex-start">
-            <InputGroup border="none" size="lg">
-              <InputLeftAddon
-                border="none"
-                bgColor="#576270"
-                color="white"
-                fontWeight="700"
-              >
-                URL
-              </InputLeftAddon>
-              <Input
-                bgColor="black"
-                border="none"
-                color="white"
-                fontWeight="400"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                _placeholder={{ fontWeight: '400', color: 'gray.600' }}
-                placeholder="Example: https://github.com/nestjs/nest"
-                _hover={{ borderColor: 'gray.500' }}
-                focusBorderColor="transparent"
-              />
-              <InputRightAddon
-                onClick={handleSearch}
-                cursor="pointer"
-                border="none"
-                bgColor="#576270"
-                color="white"
-                fontWeight="700"
-                _hover={{ bgColor: '#3f4d5b', color: 'gray.300' }}
-              >
-                Search
-              </InputRightAddon>
-            </InputGroup>
+            <SearchInput
+              value={githubUrl}
+              onChange={(event) => setGithubUrl(event.target.value)}
+              onSearch={handleSearch}
+            />
           </Stack>
-          
-            <Box alignSelf="flex-start" width="300px" height='20px'>
-            {!error &&
-              <RepoLink />
-            }
-            </Box>
-         
+
+          <Box alignSelf="flex-start" width="300px" height="20px">
+            {!error && <RepoLink />}
+          </Box>
         </Box>
       </header>
     </div>
