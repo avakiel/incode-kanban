@@ -10,8 +10,6 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.96",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
     "crypto-browserify": "^3.12.0",
@@ -30,7 +28,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "vitest",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -52,6 +50,10 @@
     ]
   },
   "devDependencies": {
-    "@types/react-beautiful-dnd": "^13.1.8"
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.8",
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "vite": "^5.2.11",
+    "vitest": "^1.6.0"
   }
 }

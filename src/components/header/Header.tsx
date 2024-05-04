@@ -17,9 +17,6 @@ export const Header = () => {
 
   const dispatch = useAppDispatch()
 
-  // https://github.com/facebook/react
-  // https://github.com/vuejs/vue
-
   const handleSearch = async () => {
     const { owner, repo } = parseGithubUrl(githubUrl)
     const sessionKey = `${owner}/${repo}`
