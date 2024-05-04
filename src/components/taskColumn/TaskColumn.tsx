@@ -135,11 +135,23 @@ export const TaskColumn = () => {
     <Flex width="100%" height="70%" justifyContent="center" alignItems="center" flexWrap="wrap" gap="5%">
       <DragDropContext onDragEnd={handleDragEnd}>
         {boxes.map((element) => (
-          <Box key={element} marginTop="10px" display="flex" flexDirection="column" alignItems="center" gap="20px" position='relative'>
+          <Box
+            key={element}
+            marginTop="10px"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap="20px"
+            position="relative"
+          >
             <Text fontSize="25px" fontWeight="700" color="#D3D3D3">
               {element}
             </Text>
-            {element === 'ToDo' && todoColumn.length > 0 && <Box right='0' position='absolute' top='7'>Loaded Issues: {todoColumn.length}</Box>}
+            {element === 'ToDo' && todoColumn.length > 0 && (
+              <Box right="0" position="absolute" top="7">
+                Loaded Issues: {todoColumn.length + doneColumn.length + progressColumn.length}
+              </Box>
+            )}
             <Droppable droppableId={element}>
               {(provided) => (
                 <Box
