@@ -56,6 +56,7 @@ export const Header = () => {
               value={githubUrl}
               onChange={(event) => setGithubUrl(event.target.value)}
               onSearch={handleSearch}
+              onClear={() => setGithubUrl('')}
             />
           </Stack>
 

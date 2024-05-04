@@ -20,7 +20,7 @@ export const RepoLink: React.FC<RepoLinkProps> = ({ setError }) => {
   const fetchStars = async () => {
     if (!activeLink) return
     const data = await fetchRepoStars(activeLink.owner, activeLink.repo)
-    console.log(data)
+    
     if (!data) {
       setError(`Check your URL -> "${GITHUB_HOST}${activeLink.owner}/${activeLink.repo}" `)
       dispatch(setActiveRepo(null))

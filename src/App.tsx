@@ -3,7 +3,7 @@ import './App.css'
 import { Header } from './components/header/Header'
 import { TaskColumn } from './components/taskColumn/TaskColumn'
 import { Terminal } from './components/terminal/Terminal'
-import { css } from '@chakra-ui/react'
+import { Box, Image, Tooltip, css } from '@chakra-ui/react'
 
 function App() {
   const scrollBarCSS = css({
@@ -22,8 +22,26 @@ function App() {
     },
   })
 
+  const cleanSessionStorage = () => {
+    sessionStorage.clear()
+  }
+
   return (
     <div className="App">
+      <Tooltip label="Clear session storage" fontSize="md">
+      <Box
+        as="span"
+        position="absolute"
+        top="5"
+        right="5"
+        cursor="pointer"
+        _hover={{
+          filter: 'drop-shadow(0 0 0.5rem blue)',
+        }}
+      >
+        <Image onClick={cleanSessionStorage} src="./trash.png" alt="logo" width="25px" height="25px" />
+      </Box>
+    </Tooltip>
       <Global styles={scrollBarCSS} />
       <Header />
       <TaskColumn />
